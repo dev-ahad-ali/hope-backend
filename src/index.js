@@ -1,12 +1,25 @@
 // require('dotenv').config({path: './env'});
 import dotenv from 'dotenv';
 import connectDb from './db/db.js';
+import { app } from './app.js';
 
 dotenv.config({
   path: './env',
 });
 
-connectDb();
+connectDb()
+  .then(() => {
+    app.on('error', (error) => {
+      console.log('Server initialize error', error);
+      throw error;
+    });
+    app.listen(process.env.PORT || 5000, () => {
+      console.log(`Server running on Port : ${process.env.PORT || 5000}`);
+    });
+  })
+  .catch((error) => {
+    console.log('Db connection error:', error);
+  });
 
 /*
 import express from 'express';
