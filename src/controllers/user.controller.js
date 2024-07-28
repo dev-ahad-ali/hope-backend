@@ -1,13 +1,14 @@
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/user.model.js';
+import { uploadOnCloudinary } from '../utils/cloudinary.js';
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user information from frontend ✅
   // validation - not empty ✅
   // check if user already exist : email, username ✅
   // check for image : avatar check ✅
-  // upload them to cloudinary : avatar check
+  // upload them to cloudinary : avatar check ✅
   // create user object - create entry in Db
   // remove password and refresh token filed from response
   // check for user creation
@@ -30,6 +31,11 @@ const registerUser = asyncHandler(async (req, res) => {
   const coverLocalPath = req.files?.cover[0]?.path;
 
   if (!avatarLocalPath) throw new ApiError(400, 'Avatar file id required');
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+  const cover = await uploadOnCloudinary(coverLocalPath);
+
+  if (!avatar) throw new ApiError(400, 'Avatar file id required');
 });
 
 export { registerUser };
