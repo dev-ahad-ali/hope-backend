@@ -10,7 +10,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for image : avatar check ✅
   // upload them to cloudinary : avatar check ✅
   // create user object - create entry in Db ✅
-  // remove password and refresh token filed from response
+  // remove password and refresh token filed from response ✅
   // check for user creation
   // return response
 
@@ -37,7 +37,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   if (!avatar) throw new ApiError(400, 'Avatar file id required');
 
-  User.create({
+  const user = await User.create({
     fullName,
     userName: userName.toLowerCase(),
     password,
@@ -45,6 +45,10 @@ const registerUser = asyncHandler(async (req, res) => {
     cover: cover?.url || '',
     email,
   });
+
+  const createdUser = await User.findById(user._id).select('-password -refreshToken'); // ".select method selects all the fields by default, by passing '-filedName' you can deselect the fields"
+
+  if (!createdUser) throw new ApiError(500, 'Something went wrong while registering user');
 });
 
 export { registerUser };
