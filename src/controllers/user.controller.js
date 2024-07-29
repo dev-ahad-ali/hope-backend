@@ -9,15 +9,15 @@ const registerUser = asyncHandler(async (req, res) => {
   // check if user already exist : email, username ✅
   // check for image : avatar check ✅
   // upload them to cloudinary : avatar check ✅
-  // create user object - create entry in Db
+  // create user object - create entry in Db ✅
   // remove password and refresh token filed from response
   // check for user creation
   // return response
 
-  const { userName, email, password } = req.body;
+  const { fullName, userName, email, password } = req.body;
   console.log('email:', email);
 
-  if ([userName, email, password].some((field) => field?.trim() === '')) {
+  if ([fullName, userName, email, password].some((field) => field?.trim() === '')) {
     throw new ApiError(400, 'All fields are required');
   }
 
@@ -36,6 +36,15 @@ const registerUser = asyncHandler(async (req, res) => {
   const cover = await uploadOnCloudinary(coverLocalPath);
 
   if (!avatar) throw new ApiError(400, 'Avatar file id required');
+
+  User.create({
+    fullName,
+    userName: userName.toLowerCase(),
+    password,
+    avatar: avatar.url,
+    cover: cover?.url || '',
+    email,
+  });
 });
 
 export { registerUser };
