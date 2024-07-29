@@ -2,6 +2,7 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/user.model.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
 
 const registerUser = asyncHandler(async (req, res) => {
   // get user information from frontend ✅
@@ -10,9 +11,9 @@ const registerUser = asyncHandler(async (req, res) => {
   // check for image : avatar check ✅
   // upload them to cloudinary : avatar check ✅
   // create user object - create entry in Db ✅
+  // check for user creation ✅
   // remove password and refresh token filed from response ✅
-  // check for user creation
-  // return response
+  // return response ✅
 
   const { fullName, userName, email, password } = req.body;
   console.log('email:', email);
@@ -49,6 +50,8 @@ const registerUser = asyncHandler(async (req, res) => {
   const createdUser = await User.findById(user._id).select('-password -refreshToken'); // ".select method selects all the fields by default, by passing '-filedName' you can deselect the fields"
 
   if (!createdUser) throw new ApiError(500, 'Something went wrong while registering user');
+
+  return res.status(201).json(new ApiResponse(200, createdUser, 'User created successfully'));
 });
 
 export { registerUser };
