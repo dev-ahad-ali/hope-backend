@@ -16,20 +16,26 @@ const registerUser = asyncHandler(async (req, res) => {
   // return response ✅
 
   const { fullName, userName, email, password } = req.body;
-  console.log('email:', email);
+  console.log('body data', req.body);
 
   if ([fullName, userName, email, password].some((field) => field?.trim() === '')) {
     throw new ApiError(400, 'All fields are required');
   }
 
-  const userAlreadyExist = User.findOne({
+  const userAlreadyExist = await User.findOne({
     $or: [{ email }, { userName }],
   });
 
   if (userAlreadyExist) throw new ApiError(409, 'User with email or username already exist');
 
+  console.log('multer files', req.files);
+
   const avatarLocalPath = req.files?.avatar[0]?.path; // console log the "req.files" to see all the info
-  const coverLocalPath = req.files?.cover[0]?.path;
+  // const coverLocalPath = req.files?.cover[0]?.path;
+  let coverLocalPath;
+  if (req.files && Array.isArray(req.files.cover) && req.files.cover.length > 0) {
+    coverLocalPath = req.files.cover[0].path;
+  }
 
   if (!avatarLocalPath) throw new ApiError(400, 'Avatar file id required');
 
@@ -43,7 +49,7 @@ const registerUser = asyncHandler(async (req, res) => {
     userName: userName.toLowerCase(),
     password,
     avatar: avatar.url,
-    cover: cover?.url || '',
+    coverImage: cover?.url || '',
     email,
   });
 

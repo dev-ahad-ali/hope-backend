@@ -4,7 +4,7 @@ import { DB_NAME } from '../constants.js';
 const connectDb = async () => {
   try {
     const connectionInstance = await mongoose.connect(
-      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rocppxe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/${DB_NAME}`
+      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.rocppxe.mongodb.net/${DB_NAME}`
     );
     console.log('MongoDb connected !! Instance:', connectionInstance.connection.host);
   } catch (error) {

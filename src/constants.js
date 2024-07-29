@@ -1,1 +1,1 @@
-export const DB_NAME = 'hodedb';
+export const DB_NAME = 'hopeDb';
