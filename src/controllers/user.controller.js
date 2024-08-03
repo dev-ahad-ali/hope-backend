@@ -79,6 +79,11 @@ const loginUser = asyncHandler(async (req, res) => {
   });
 
   if (!user) throw new ApiError(400, 'User does not exist');
+
+  // custom method can only be used by object from database, not the schema object.
+  const isPasswordValid = await user.isPasswordCorrect(password);
+
+  if (!isPasswordValid) throw new ApiError(401, 'Invalid user credentials');
 });
 
 export { registerUser, loginUser };
