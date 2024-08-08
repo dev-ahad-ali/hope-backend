@@ -3,7 +3,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.model.js';
 
-export const verifyJWT = asyncHandler(async (req, res, next) => {
+// you can right "_" when you are not using any of the parameters "req,res,next"
+export const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
     const token = req.cookies?.accessToken || req.header('Authorization')?.replace('Bearer ', '');
 
