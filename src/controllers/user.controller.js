@@ -162,11 +162,41 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Unauthorized request');
   }
 
-  const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
+  try {
+    const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
 
-  const user = await User.findById(decodedToken?._id);
+    const user = await User.findById(decodedToken?._id);
 
-  if (!user) throw new ApiError(401, 'Invalid refresh token');
+    if (!user) throw new ApiError(401, 'Invalid refresh token');
+
+    if (incomingToken !== user?.refreshToken) {
+      throw new ApiError(401, 'Refresh is expired or used');
+    }
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    const { accessToken, newRefreshToken } = await generateAccessAndRefreshTokens(user._id);
+
+    return res
+      .status(200)
+      .cookie('accessToken', accessToken)
+      .cookie('refreshToken', newRefreshToken)
+      .json(
+        new ApiResponse(
+          200,
+          {
+            accessToken,
+            refreshToken: newRefreshToken,
+          },
+          'Access Token Refreshed'
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message, 'Invalid Refresh Token');
+  }
 });
 
 export { registerUser, loginUser, logoutUser };
