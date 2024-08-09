@@ -3,6 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { User } from '../models/user.model.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
+import jwt from 'jsonwebtoken';
 
 const generateAccessAndRefreshTokens = async (userId) => {
   try {
@@ -160,6 +161,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   if (!incomingToken) {
     throw new ApiError(401, 'Unauthorized request');
   }
+
+  const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
 });
 
 export { registerUser, loginUser, logoutUser };
