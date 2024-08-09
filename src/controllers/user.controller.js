@@ -163,6 +163,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 
   const decodedToken = jwt.verify(incomingToken, process.env.REFRESH_TOKEN_SECRET);
+
+  const user = await User.findById(decodedToken?._id);
+
+  if (!user) throw new ApiError(401, 'Invalid refresh token');
 });
 
 export { registerUser, loginUser, logoutUser };
