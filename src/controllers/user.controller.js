@@ -218,6 +218,28 @@ const getCurrentUser = asyncHandler(async (req, res) => {
   return res.status.status(200).json(200, req.user, 'current user fetched successfully');
 });
 
+const updateAccountDetails = asyncHandler(async (req, res) => {
+  // make a separate controller for file update such as image.
+  const { fullName, email } = req.body;
+
+  if (!fullName || !email) {
+    throw new ApiError(400, 'All fields are required');
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName: fullName,
+        email: email,
+      },
+    },
+    { new: true }
+  ).select('-password');
+
+  return res.status(200).json(new ApiResponse(200, user, 'Account details successfully'));
+});
+
 export {
   registerUser,
   loginUser,
@@ -225,4 +247,5 @@ export {
   refreshAccessToken,
   changeCurrentPassword,
   getCurrentUser,
+  updateAccountDetails,
 };
